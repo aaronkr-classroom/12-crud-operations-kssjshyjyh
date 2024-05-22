@@ -10,16 +10,32 @@ const mongoose = require("mongoose"),
     /**
      * @TODO 1. 스키마에 필드 추가
      */
-    name: String,
-    email: String,
-    phoneNumber: String,
-    newsletter: Boolean,
-    profileImg: String,
+    name: {
+      type: String,
+      required: true
+    },
+    email: {
+      type: String,
+      requierd: true,
+      unique: true,
+      lowercase: true
+    },
+    phoneNumber: {
+      type: String,
+    },
+    newsletter: {
+      type: Boolean
+    },
+    profileImg: {
+      type :String
+    },
     courses: [
       {
         /*
          * @TODO: Child referencing (https://dev.to/oluseyeo/how-to-create-relationships-with-mongoose-and-node-js-11c8)
          */
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course"
       },
     ],
   });
@@ -37,6 +53,20 @@ subscriberSchema.methods.getInfo = function () {
   /**
    * @TODO 2. 구독자의 Full info를 구하기 위한 인스턴스 메소드 추가
    */
+  return `Name: ${this.name} Email ${this.email} Phone ${this.phoneNumber}`;
+};
+
+// find phone
+subscriberSchema.methods.findPhone = function() {
+  return this.model("Subscriber")
+    .find({phoneNumber: this.phoneNumber})
+    .exec();
+};
+
+//Email to lowercase
+subscriberSchema.methods.eamilToLower = function() {
+  this.email = this.email.toLowerCase();
+  return this.email;
 };
 
 module.exports = mongoose.model("Subscriber", subscriberSchema);
